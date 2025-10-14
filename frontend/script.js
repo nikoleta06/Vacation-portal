@@ -33,11 +33,17 @@ document.addEventListener("DOMContentLoaded", () => {
           if (response.ok) {
             message.style.color = "green";
             message.textContent = "Successful connection"
+            
+            //........SAVE NAME AND EMAIL.......//
             localStorage.setItem("userEmail", email);
+
+            const userName = email.split("@")[0];        // save the name of user from email
+            localStorage.setItem("userName", userName);
 
             setTimeout(() => {
               window.location.href = "dashboard.html";
             },1500);
+
           } else{
             message.style.color = "red";
             message.textContent = "ERROR" + (data.error || "Incorrect email or password");

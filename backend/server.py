@@ -187,7 +187,19 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                     self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                     self.send_header("Content-Type", "application/json")
                     self.end_headers()
-                    self.wfile.write(json.dumps({"message": "Login successful"}).encode())
+
+                    # here we take the data from user 
+                    user_data = {
+                        "id": user[0],
+                        "name": user[1],
+                        "email": user[2],
+                        "role": user[3]
+                    }
+
+                    self.wfile.write(json.dumps({
+                        "message": "Login successful",
+                        "user": user_data
+                    }).encode())
                 else:
                     print(f"Login failed for: {email}")
                     self.send_response(401)

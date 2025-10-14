@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     const userEmail = localStorage.getItem("userEmail");
-    const welcomeText = document.getElementById("welcomeText");
+    const welcomeMsg = document.getElementById("welcomeMsg");
     
 
     if (userEmail) {
@@ -11,11 +11,13 @@ document.addEventListener("DOMContentLoaded", () => {
         // We capitalize the first letter (e.g. maria -> Maria)//
         const formattedName = userName.charAt(0).toUpperCase() + userName.slice(1);
 
-        welcomeText.textContent = `Welcome, ${formattedName}!`;
+        // We display the message//
+        welcomeMsg.textContent = `Welcome, ${formattedName}!`;
     } else{
         window.location.href= "index.html"; // If there is no user, go back to login
     }
 
+        //......... LOGOUT........
     const logoutBtn = document.getElementById("logoutBtn");
     logoutBtn.addEventListener("click", () => {
         localStorage.removeItem("userEmail");

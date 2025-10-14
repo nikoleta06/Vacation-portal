@@ -135,3 +135,80 @@ button[type="submit"]:hover{
     background-color: #005ea6;
     transform: scale(1.05);
 }
+
+/*-----------style for section---------*/
+
+.vacation-section {
+    margin-top: 40px;
+    text-align: center;
+}
+
+#requestBtn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+#requestBtn:hover{
+    background-color: #005ea6;
+}
+
+#vacationTable {
+    margin: 20px auto;
+    border-collapse: collapse;
+    width: 90%;
+}
+
+#vacationTable th,
+#vacationTable td{
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+#vacationTable th {
+    background-color: #007bff;
+    color: white;
+}
+
+.hidden {
+    display: none;
+}
+
+#vacationForm{
+    margin-top: 30px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    background: #f9f9f9;
+}
+
+#vacationForm input,
+#vacationForm textarea{
+    width:100%;
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+#saveVacationBtn{
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+#saveVacationBtn:hover {
+    background-color: #1e7e34;
+}
