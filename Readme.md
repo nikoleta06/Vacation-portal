@@ -1,14 +1,14 @@
 ### SET UP  
-git clone https://github.com/nikoleta06/Vacation-portal.git
-cd Vacation-portal
-py backend/server.py
+1. git clone https://github.com/nikoleta06/Vacation-portal.git
+2. cd Vacation-portal
+3. py backend/server.py
 
-open frontend/index.html with a browser
+4. open frontend/index.html with a browser
 
 ###  Application Architecture
-Frontend (HTML/CSS/JS) : UI presentation, login handling, dashboard display
-Backend (Python HTTPServer) /login, /users, /vocation request management
-Database (SQLite3) User and permission request storage
+1. Frontend (HTML/CSS/JS) : UI presentation, login handling, dashboard display
+2. Backend (Python HTTPServer) /login, /users, /vocation request management
+3. Database (SQLite3) User and permission request storage
 
 ###  Execution Flow
 1. User opens index.html
@@ -19,10 +19,10 @@ Database (SQLite3) User and permission request storage
 
 ### Unimplemented Functions
 
-1.Role Management (Administrator Panel)    There is no administrator role for approving/rejecting applications yet.
-2.Display all applications    Only the applications of the logged-in user are displayed.
-3.Edit / Delete applications    It is not possible to change or cancel an application.
-4.Secure storage of passwords	Passwords are not stored with encryption (hash).
-5.Data validation    There are no checks for incomplete or incorrect information in the form.
-6.Full dashboard connection to database. The application table is not yet dynamically updated from the backend,although the server is almost complete.
+1. Role Management (Administrator Panel)  There is no administrator role for approving/rejecting applications yet. 
+2. Display all applications    Only the applications of the logged-in user are displayed.   
+3. Edit / Delete applications    It is not possible to change or cancel an application. 
+4. Secure storage of passwords	Passwords are not stored with encryption (hash).
+5. Data validation    There are no checks for incomplete or incorrect information in the form. 
+6. Full dashboard connection to database. The application table is not yet dynamically updated from the backend,although the server is almost complete. 
 
