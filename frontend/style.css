@@ -10,65 +10,51 @@ body{
     height: 100vh;
 }
 
+/*---------- style for login page------------*/
 
-.container {
+.login-container {
     background: white;
-    padding: 40 px 30px;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    width: 320px;
+    padding: 40px 60px;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    width: 400px;
     text-align: center;
 }
 
-.container h2{
-    color: #161616;
+.login-container h1 {
+    color: #0b4973;
     margin-bottom: 25px;
-}
-
-form{
-    display: flex;
-    flex-direction:column;
-    gap:15px;
+    font-size: 26px;
 }
 
 input[type="email"],
 input[type="password"]{
-    padding:10px;
-    border: 1px solid #bbb;
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
     border-radius: 8px;
     font-size:14px;
     transition: all 0.3s ease;
 }
 
-input[type="email"]:focus,
-input[type="password"]:focus{
-    border-color: #91befd;
-    outline: none;
-    box-shadow: 0 0 5px rgba(90,157,252,0.3);
-}
 
-button {
-    padding: 10px;
-    background-color: #087ad8;
-    color:white
-    border none;
-    border-radius: 8px;
+button[type="submit"] {
+    padding: 12px 25px;
+    background-color: #007bff;
+    color:white;
+    border: none;
+    border-radius: 10px;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
 }
 
-input{
-    background-color:#087ad8;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
 
-button:hover{
-    background-color: #046fc7;
+button[type="submit"]:hover{
+    background-color: #0056b3;
+    transform: scale(1.05);
 }
 
 #message {
@@ -87,12 +73,12 @@ button:hover{
 }
 
 /* -----style for dashboard.html----------*/
-
+/*------header bar------*/
 .dashboard-header {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100;
+    width: 100%;
     background-color: #007bff;
     color: white;
     text-align: center;
@@ -104,32 +90,48 @@ button:hover{
     z-index: 10;
 }
 
-body{
-    font-family: "Poppins", sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #cbe5ff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+/*-----------main dashboard box-------*/
+.dashboard-container{
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    padding: 40px 60px;
+    text-align: center;
+    width:420px;
+    margin-top: 100px;
+    transition: transform 0.3 ease;
 }
 
-.container
-#logoutBtn{
-    background-color: #cfe8ff;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.dashboard-container:hover{
+    transform: translateY(-4px);
+}
 
+.dashboard-container h1 {
+    font-size: 30px;
+    font-weight: 700;
+    color: #0b4973;
+    margin-bottom: 15px;
+}
+
+.dashboard-container h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 25px;
+}
+
+/*-------------logout button---------*/
+#logoutBtn{
+    background-color: #007bff;
+    color: white;
     border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
+    border-radius: 10px;
+    padding: 12px 25px;
+    font-size: 16px;
     cursor: pointer;
-    margin-top: 20px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 #logoutBtn:hover{
     background-color: #005ea6;
+    transform: scale(1.05);
 }

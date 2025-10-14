@@ -11,13 +11,51 @@
 <body>
 
     <header class="dashboard-header">
-        <h2>Vocation Portal</h2>
+        <h2>Vacation Portal</h2>
     </header>
 
     <main class="dashboard-container">
         <h1>Welcome to your Dashboard</h1>
-        <h3 id="userEmailDisplay"></h3>
+        <h3 id="welcomeText">Welcome!</h3>
         <button id="logoutBtn">Logout</button>
+
+        <section class="vacation-section">
+
+            <h2>Vacation Request</h2>
+            <button id="requestBtn"> + Request Vacation</button>
+            <table id="vacationTable">
+                <thead>
+                    <tr>
+                        <th>Date Submitted</th>
+                        <th>Dates Requested</th>
+                        <th>Reason</th>
+                        <th>Total Days</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+
+            <div id="vacationForm" class="hidden">
+                <h3>Submit Vacation Request</h3>
+
+                <label for="startDate">From:</label>
+                <input type="date" id="startDate" required>
+
+                <label for="endDate">To:</label>
+                <input type="date" id="endDate" required>
+
+                <label for="reason">Reason:</label>
+                <textarea id="reason" rows="3" placeholder="Write your reason..."></textarea>
+
+                <button id="saveVacationBtn">Save</button>
+
+            </div>
+        
+        </section>
+    
     </main>
     
     <script src="dashboard.js"></script>
