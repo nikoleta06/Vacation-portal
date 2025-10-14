@@ -1,0 +1,135 @@
+       /*body for all html*/
+body{
+    font-family: "Poppins", sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #cbe5ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+
+.container {
+    background: white;
+    padding: 40 px 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    width: 320px;
+    text-align: center;
+}
+
+.container h2{
+    color: #333;
+    margin-bottom: 25px;
+}
+
+form{
+    display: flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+input[type="email"],
+input[type="password"]{
+    padding:10px;
+    border: 1px solid #bbb;
+    border-radius: 8px;
+    font-size:14px;
+    transition: all 0.3s ease;
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus{
+    border-color: #5a9dfc;
+    outline: none;
+    box-shadow: 0 0 5px rgba(90,157,252,0.3);
+}
+
+button {
+    padding: 10px;
+    background-color: #087ad8;
+    color:white
+    border none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+input{
+    background-color:#087ad8;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover{
+    background-color: #056bbf;
+}
+
+#message {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+/*-------------responsive ---------------*/
+
+@media (max-width:400px) {
+    .container{
+        width:90%;
+        padding:25px;
+    }
+
+}
+
+/* -----style for dashboard.html----------*/
+
+.dashboard-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100;
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 10;
+}
+
+body{
+    font-family: "Poppins", sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #cbe5ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container
+#logoutBtn{
+    background-color: #cfe8ff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+#logoutBtn:hover{
+    background-color: #005ea6;
+}
