@@ -1,4 +1,4 @@
-       /*body for all html*/
+         /*body for all html*/
 body{
     font-family: "Poppins", sans-serif;
     margin: 0;
@@ -42,7 +42,7 @@ input[type="password"]{
 
 input[type="email"]:focus,
 input[type="password"]:focus{
-    border-color: #5a9dfc;
+    border-color: #91befd;
     outline: none;
     box-shadow: 0 0 5px rgba(90,157,252,0.3);
 }
