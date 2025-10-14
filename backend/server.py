@@ -37,51 +37,95 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                 users = conn.execute("SELECT id, name, email, role FROM users").fetchall()
                 conn.close()
                 
-                self._set_headers()
+                self.send_response(200)
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
                 self.wfile.write(json.dumps([dict(u) for u in users]).encode())
                 print("Returned", len(users), "users")
 
             elif self.path.startswith("/vocation"):
                 print("GET /vocation detected")
 
-                
+                # ---- Reading parameters from URL ----
+
                 query = urlparse(self.path).query
                 params = parse_qs(query)
+                user_email = params.get("email", [None])[0]
                 user_id = params.get("user_id", [None])[0]
 
-                if not user_id:
-                    print("Missing user_id in request")
-
-                    self.send_response(400)
-                    self.send_header("Content-Type", "application/json")
-                    self.end_headers()
-                    self.wfile.write(json.dumps({"error": "Missing user_id"}).encode())
-                    return
-            
                 conn = sqlite3.connect(DB_NAME)
                 conn.row_factory = sqlite3.Row
                 cursor = conn.cursor()
-                cursor.execute("SELECT * FROM vocation_requests WHERE user_id = ?", (user_id,))
+                   
+                         # email or id
+                if user_email:
+                    print(f"Fetching vocation requests for email: {user_email}")
+            
+                    cursor.execute("""
+                        SELECT v.id, v.start_date, v.end_date, v.reason, u.email 
+                        FROM vocation_requests v
+                        JOIN users u ON v.user_id = u.id 
+                        WHERE u.email = ?
+                        ORDER BY v.id DESC
+                    """, (user_email,))
+
+                elif user_id:
+                    print(f"Fetching vocation requests fore user_id: {user_id}")
+                    cursor.execute("""
+                        SELECT v.id, v.start_date, v.end_date, v.reason, u.email 
+                        FROM vocation_requests v
+                        JOIN users u ON v.user_id = u.id 
+                        WHERE u.email = ?
+                        ORDER BY v.id DESC
+                    """, (user_id,))
+
+
+                else:
+                    print("Fetching all vocation requests")
+                    cursor.execute("""
+                        SELECT v.id, v.start_date, v.end_date, v.reason, u.email 
+                        FROM vocation_requests v
+                        JOIN users u ON v.user_id = u.id 
+                        WHERE u.email = ?
+                        ORDER BY v.id DESC
+                    """)
+
                 rows = cursor.fetchall()
                 conn.close()
 
-                results = [dict(r) for r in rows]   # i keep the results in a dictionary 
-                print("Returned", len(results), "vocation requests for user", user_id)
+                            # ..........  conversion of results.........
+                results = [
+                    {
+                        "id": row["id"],
+                        "start_date": row["start_date"],
+                        "end_date": row["end_date"],
+                        "reason": row["reason"],
+                        "email": row["email"]
+                    }
+                    for row in rows
+                ]   
+                print("Returned", len(results), "vocation requests")
 
                 self.send_response(200)
+                self.send_header("Access-Control-Allow-Origin", "*")
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
                 self.wfile.write(json.dumps(results).encode())
             
             else:
                 print("Invalid GET path:", self.path)
-
-                self._set_headers()
+                                
+                self.send_response(404)
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
                 self.wfile.write(json.dumps({"error": "Not found"}).encode())
 
         except Exception as e:
             print("SERVER ERROR:", e)
             self.send_response(500)
+            self.send_header("Access-Control-Allow-Origin", "*")
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             self.wfile.write(json.dumps({"error": str(e)}).encode())
