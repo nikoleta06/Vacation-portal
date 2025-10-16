@@ -134,7 +134,7 @@ class LeavePortalServer(BaseHTTPRequestHandler):
         print("  do_POST triggered!") # i want to see what coming here
         
         try:
-            if self.path == "/users":                                 # creating new user 
+            if self.path == "/users":                     # Sign up creating new user 
                 print("  POST /users detected")
                 content_length= int(self.headers["Content-Length"])
                 post_data = self.rfile.read(content_length)
@@ -146,22 +146,51 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                 role = user_data.get("role", "employee")
                 password = user_data.get("password")
 
+                            # check
+                if not name or not email or not password:
+                    self.send_response(400)
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                    self.send_header("Content-Type","application/json")
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"error": "Missing required fields"}).encode())
+                    return
+                
                 conn= sqlite3.connect(DB_NAME)
                 cursor = conn.cursor()
-                cursor.execute("INSERT INTO users (name,email,role,password) VALUES (?,?,?,?)", (name,email,role,password))
+
+                # Check if user already exists
+                cursor.execute("SELECT * FROM users WHERE email=?", (email,))
+                existing_user = cursor.fetchone()
+
+                if existing_user:
+                    print(" User already exists:", email)
+                    self.send_response(409)
+                    self.send_header("Access-Control-Aloow-Origin", "*")
+                    self.send_header("Content-Type", "application/json")
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"error": "User already exists"}).endcode())
+                    conn.close()
+                    return
+                
+                # Insert new user
+                cursor.execute("INSERT INTO users (name,email,role,password) VALUES (?,?,?,?)", 
+                               (name,email,role,password))
                 conn.commit()
                 conn.close()
-                print("  User inserted into DB")
+                print("  User inserted into DB successfully")
 
                 self.send_response(201)
-                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Access-Control-Aloow-Origin", "*")
                 self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
-                self.send_header("Content-Type","application/json")
+                self.send_header("Content-Type", "application/json")
                 self.end_headers()
                 self.wfile.write(json.dumps({"message": "User created successfully"}).encode())
-                print("  Response sent")
 
-            elif self.path == "/login":                                     # creating login for users 
+                
+
+                  # creating login for users connection
+            elif self.path == "/login":                                     
                 print("POST /login detected")                                  # this line for debugging
 
                  
@@ -181,7 +210,7 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                 conn.close()
 
                 if user: 
-                    print(f"Login successful for:", {email})
+                    print(f"Login successful for: {email}")
                     self.send_response(200)
                     self.send_header("Access-Control-Allow-Origin", "*")
                     self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
@@ -209,7 +238,7 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                     self.end_headers()
                     self.wfile.write(json.dumps({"error": "Invalid credentials"}).encode())
 
-
+                 # Submitting a permit application
             elif self.path == "/vocation":             # CREATION SUBMISSION OF A LICENSE APPLICATION 
                 print("POST /vocation detected") 
 
@@ -226,11 +255,13 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                 conn = sqlite3.connect(DB_NAME)
                 cursor = conn.cursor()
 
-                cursor.execute(""" 
-                               INSERT INTO vocation_requests (user_id, start_date, end_date, reason)
-                               VALUES (?, ?, ?, ?)""",
-                               (user_id, start_date, end_date, reason))
-                
+                cursor.execute(
+                    """ 
+                    INSERT INTO vocation_requests (user_id, start_date, end_date, reason)
+                    VALUES (?, ?, ?, ?)
+                    """,
+                    (user_id, start_date, end_date, reason))
+                    
                 conn.commit()
                 conn.close()
                 print("Vocation request inserted into DB")
@@ -243,8 +274,8 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps({"message": "Vocation request submitted successfully"}).encode())
 
 
-
-            else:                                                              # IN CASE  something wrong 
+                      # IN CASE  something wrong 
+            else:                                                               
                 print("Invalid POST path:", self.path)
                 self.send_response(404)
                 self.send_header("Access-Control-Allow-Origin", "*")
