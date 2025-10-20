@@ -164,12 +164,13 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                 existing_user = cursor.fetchone()
 
                 if existing_user:
-                    print(" User already exists:", email)
+                    print(f"User already exists: {email}")
                     self.send_response(409)
-                    self.send_header("Access-Control-Aloow-Origin", "*")
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                     self.send_header("Content-Type", "application/json")
                     self.end_headers()
-                    self.wfile.write(json.dumps({"error": "User already exists"}).endcode())
+                    self.wfile.write(json.dumps({"error": "User already exists"}).encode())
                     conn.close()
                     return
                 
@@ -178,10 +179,10 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                                (name,email,role,password))
                 conn.commit()
                 conn.close()
-                print("  User inserted into DB successfully")
+                print("User inserted into DB successfully")
 
                 self.send_response(201)
-                self.send_header("Access-Control-Aloow-Origin", "*")
+                self.send_header("Access-Control-Allow-Origin", "*")
                 self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
@@ -286,7 +287,7 @@ class LeavePortalServer(BaseHTTPRequestHandler):
 
 
         except Exception as e:
-                print(" SERVER ERROR:", e)
+                print(f" SERVER ERROR: {e}")
                 self.send_response(500)
                 self.send_header("Access-Control-Allow-Origin", "*")
                 self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
@@ -354,4 +355,3 @@ if __name__ == "__main__":
     print(f"start server running at http://localhost:{PORT}")
     server.serve_forever()
       
-
