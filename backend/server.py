@@ -253,26 +253,37 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                 end_date = vocation_data.get("end_date")
                 reason = vocation_data.get("reason")
 
+
+                # Validation 
+                if not user_id or not start_date or not end_date or not reason:
+                    self.send_response(400)
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.send_header("Content-Type", "application/json")
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"error": "Missing required fields"}).encode())
+                    return
+
                 conn = sqlite3.connect(DB_NAME)
                 cursor = conn.cursor()
-
+ 
+                #  Add application with status 'pending'
                 cursor.execute(
                     """ 
-                    INSERT INTO vocation_requests (user_id, start_date, end_date, reason)
-                    VALUES (?, ?, ?, ?)
+                    INSERT INTO vocation_requests (user_id, start_date, end_date, reason, status)
+                    VALUES (?, ?, ?, 'pending')
                     """,
                     (user_id, start_date, end_date, reason))
                     
                 conn.commit()
                 conn.close()
-                print("Vocation request inserted into DB")
+                print("Vacation request inserted into DB (pending approval)")
 
                 self.send_response(201)
                 self.send_header("Access-Control-Allow-Origin", "*")
                 self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
-                self.wfile.write(json.dumps({"message": "Vocation request submitted successfully"}).encode())
+                self.wfile.write(json.dumps({"message": "Vacation request submitted successfully"}).encode())
 
 
                       # IN CASE  something wrong 
@@ -302,24 +313,26 @@ class LeavePortalServer(BaseHTTPRequestHandler):
         try:
             if self.path =="/vocation":
                 
-                             # read data from request body 
+                 # read data from request body 
                 content_length= int(self.headers["Content-Length"])
-                post_data = self.rfile.read(content_length)
-                update_data = json.loads(post_data)
+                put_data = self.rfile.read(content_length)
+                update_data = json.loads(put_data)
                 print("Received update data:", update_data)
 
-                            #   get the fields from json 
+                 # get the fields from json 
                 vocation_id = update_data.get("id")
                 new_status = update_data.get("status")
 
                 if not vocation_id or new_status not in ["approved", "rejected"]:
                     self.send_response(400)
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                     self.send_header("Content-Type", "application/json")
-                    self.end_headres()
+                    self.end_headers()
                     self.wfile.write(json.dumps({"error": "Missing or invalid fields"}).encode())
                     return
                 
-                             # update database 
+                # Update database 
                 conn = sqlite3.connect(DB_NAME)
                 cursor = conn.cursor()
                 cursor.execute("UPDATE vocation_requests SET status=? WHERE id=?", (new_status, vocation_id))
@@ -329,6 +342,8 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                 print(f"Vocation {vocation_id} updated to {new_status}")
 
                 self.send_response(200)
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
                 self.wfile.write(json.dumps({"message": "Vocation status updated successfully"}).encode())
@@ -336,6 +351,8 @@ class LeavePortalServer(BaseHTTPRequestHandler):
             else:
                 print("Invalid PUT path:", self.path)
                 self.send_response(404)
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
                 self.wfile.write(json.dumps({"errors": "Not found"}).encode())
@@ -343,6 +360,8 @@ class LeavePortalServer(BaseHTTPRequestHandler):
         except Exception as e:
             print("SERVER ERROR:", e)
             self.send_response(500)
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             self.wfile.write(json.dumps({"error": str(e)}).encode())

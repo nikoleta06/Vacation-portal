@@ -1,0 +1,1 @@
+ALTER TABLE vocation_requests ADD COLUMN status TEST DEFAULT 'pending';
