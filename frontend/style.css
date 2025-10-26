@@ -3,41 +3,54 @@ body{
     font-family: "Poppins", sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #cbe5ff;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    background: linear-gradient(135deg, #74b9ff, #a29bfe);
 }
 
-/*---------- style for login page------------*/
+/*---------- style for login & signup page------------*/
 
 .login-container {
     background: white;
-    padding: 40px 60px;
-    border-radius: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    padding: 45px 55px;
+    border-radius: 25px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
     width: 400px;
     text-align: center;
+    animation: fadeIn 0.6s ease;
 }
 
 .login-container h1 {
     color: #0b4973;
-    margin-bottom: 25px;
-    font-size: 26px;
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: 700;
 }
 
+/*--------input fields----------*/
+input[type="text"],
 input[type="email"],
 input[type="password"]{
     width: 100%;
-    padding: 12px;
-    margin: 10px 0;
+    padding: 13px;
+    margin: 10px 0 18px 0;
     border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size:14px;
-    transition: all 0.3s ease;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+input[type="text"]:focus,
+input[type="email"]:focus,
+inout[type="password"]:focus{
+    border-color: #007bff;
+    box-shadow: 0 0 6px rgba(0,123,255,0.4);
+    outline: none;
+}
+
+/*----------buttons-----------*/
 
 button[type="submit"] {
     padding: 12px 25px;
@@ -49,17 +62,44 @@ button[type="submit"] {
     font-size: 16px;
     transition: background-color 0.3s ease, transform 0.2s ease;
     width: 100%;
+    margin-top: 10px;
 }
 
 
 button[type="submit"]:hover{
     background-color: #0056b3;
-    transform: scale(1.05);
+    transform: translateY(-2px);
 }
 
+/*----------MESSAGES---------*/
 #message {
     margin-top: 15px;
     font-size: 14px;
+    color: #333;
+}
+
+/*-----------extra styling for links and buttons----------*/
+.login-container p {
+    margin-top: 18px;
+    font-size: 14px;
+}
+
+.login-container a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.login-container a:hover {
+    color: #0056b3;
+    text-decoration: undeline;
+}
+
+/*-------------animation----------*/
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /*-------------responsive ---------------*/

@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("signupForm");
-    const message = document.getElementById("message");
+    const message = document.getElementById("signupMessage");
 
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -23,6 +23,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 message.style.color= "green";
                 message.textContent= "Registration successful! You can now log in";
                 form.reset();  //clears the fields
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 1500);
+                
             } else {
                 message.style.color= "red";
                 message.textContent= (data.error || "Error during registration.");
