@@ -113,6 +113,21 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(json.dumps(results).encode())
             
+            elif self.path == "/vocation_all":
+                print("GET /vocation_all detected")
+                conn = sqlite3.connect(DB_NAME)
+                conn.row_factory = sqlite3.Row
+                cursor = conn.cursor()
+                cursor.execute("SELECT * FROM vocation_requests")
+                rows = cursor.fetchall()
+                conn.close()
+
+                self.send_response(200)
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps([dict(r) for r in rows]).encode())
+                
             else:
                 print("Invalid GET path:", self.path)
                                 
@@ -190,9 +205,9 @@ class LeavePortalServer(BaseHTTPRequestHandler):
 
                 
 
-                  # creating login for users connection
+            # creating login for users connection
             elif self.path == "/login":                                     
-                print("POST /login detected")                                  # this line for debugging
+                print("POST /login detected")         # this line for debugging
 
                  
                 content_length=int(self.headers["Content-Length"])
