@@ -36,13 +36,87 @@ document.addEventListener("DOMContentLoaded", () => {
         const endDate = document.getElementById("endDate").value;
         const reason = document.getElementById("reason").value;
 
-        if(!startDate || !endDate || !reason){
+        if(!startDate || !endDate || !reason) {
             alert("Please fell all fields!");
             return;
         }
 
         //-----Find user ID by email---------
+        const userEmail = localStorage.getItem("userEmail");
+        const userResponse = await fetch("http://127.0.0.1:8000/users");
+        const users = await userResponse.json();
+        const user = users.find(u => u.email === userEmail);
+
+        if(!user) {
+            alert("User not found in database!");
+            return;
+        }
         
-    })
+        const vocationData = {
+            useR_id: user.id,
+            start_date: startDate,
+            end_date: endDate,
+            reason: reason
+        };
+
+        try {
+            const response = await fetch("http://127.0.0.1:8000/vocation", {
+                method: "POST",
+                headers: { "Content-Type": "application/json"},
+                body: JSON.stringify(vocationData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+            alert("Vacation request submitted successfully!");
+            vacationForm.classList.add("hidden");
+            loadVacationRequests();
+            } else {
+            alert("Error: " + data.error);
+            }    
+        } catch (error) {
+          alert("Server error: " + error.message);
+        }
+    });
+
+
+    //-------Load existing requests--------
+    async function loadVacationRequests() {
+        try {
+            const userEmail = localStorage.getItem("userEmail");
+            const response = await fetch(`http://127.0.0.1:8000/vocation?email=${userEmail}`);
+            const data = await response.json();
+
+            vacationTableBody.innerHTML = "";  //----Clear old rows-----
+
+            data.forEach(req => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${new Date().toLocaleDateString()}</td>
+                    <td>${req.start_date} - ${req.end_date}</td>
+                    <td>${req.reason}</td>
+                    <td>$calcDays(req.start_date, req.end_date)} days</td>
+                    <td>${req.status || "pending"}</td>
+                `;
+                vacationTableBody.appendChild(row);
+            });
+        
+        } catch (error) {
+            console.error("Error loading vacation requests:", error);
+        }
+    }
+
+    //-------Helper- Calculate total days----
+    function calcDays(start, end) {
+        const s = new Date(start);
+        const e = new Date(end);
+        const diff = (e-s) / (1000 * 3600 * 24) + 1;
+        return diff;
+    }
+
+    // ----Load existing requests on page load-----
+    loadVacationRequests();
+
 });
 
