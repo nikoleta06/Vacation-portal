@@ -252,3 +252,29 @@ button[type="submit"]:hover{
 #saveVacationBtn:hover {
     background-color: #1e7e34;
 }
+
+.hidden {
+    display: none;
+}
+
+.vacation-section {
+    margin-top: 30px;
+}
+
+#vacationForm {
+    margin-top: 20px;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+#vacationTable th, #vacationTable td {
+    border: 1px solid #ddd;
+    padding:8px;
+    text-align:center;
+}
+
+#vacationTable th {
+    background-color: #007bff;
+    color: white;
+}

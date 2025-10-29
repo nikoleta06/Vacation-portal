@@ -285,9 +285,9 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                 cursor.execute(
                     """ 
                     INSERT INTO vocation_requests (user_id, start_date, end_date, reason, status)
-                    VALUES (?, ?, ?, 'pending')
+                    VALUES (?, ?, ?, ?, ?)
                     """,
-                    (user_id, start_date, end_date, reason))
+                    (user_id, start_date, end_date, reason, "pending"))
                     
                 conn.commit()
                 conn.close()

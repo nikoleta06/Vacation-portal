@@ -32,12 +32,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     //----Save vacation request------
     saveVacationBtn.addEventListener("click", async () => {
-        const starDate = document.getElementById("startDate").value;
-        const endDate = document.getElementById("endDate").value;
+        const start_date = document.getElementById("startDate").value;
+        const end_date = document.getElementById("endDate").value;
         const reason = document.getElementById("reason").value;
 
-        if(!startDate || !endDate || !reason) {
-            alert("Please fell all fields!");
+        if(!start_date || !end_date || !reason) {
+            alert("Please fill all fields!");
             return;
         }
 
@@ -53,32 +53,40 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         
         const vocationData = {
-            useR_id: user.id,
-            start_date: startDate,
-            end_date: endDate,
+            user_id: user.id,
+            start_date: start_date,
+            end_date: end_date,
             reason: reason
         };
 
         try {
             const response = await fetch("http://127.0.0.1:8000/vocation", {
                 method: "POST",
-                headers: { "Content-Type": "application/json"},
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(vocationData)
             });
 
             const data = await response.json();
 
             if (response.ok) {
-            alert("Vacation request submitted successfully!");
-            vacationForm.classList.add("hidden");
-            loadVacationRequests();
+                alert("Vacation request submitted successfully!");
+                vacationForm.classList.add("hidden");
+                loadVacationRequests();   // refreshes the table
             } else {
-            alert("Error: " + data.error);
+              alert("Error: " + data.error);
             }    
         } catch (error) {
           alert("Server error: " + error.message);
         }
     });
+
+    //--------Function to calculate total days between two days--------
+    function calcDays(start, end) {
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+        const diffTime = endDate - startDate;
+        return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // inclusive count
+    }
 
 
     //-------Load existing requests--------
@@ -90,13 +98,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
             vacationTableBody.innerHTML = "";  //----Clear old rows-----
 
+            if (data.length === 0) {
+                vacationTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No vacation requests yet.</td></tr>`;
+                return;
+            }
+
             data.forEach(req => {
+                const totalDays = calcDays(req.start_date, req.end_date); // ---This is where the calculation takes place.
                 const row = document.createElement("tr");
                 row.innerHTML = `
                     <td>${new Date().toLocaleDateString()}</td>
                     <td>${req.start_date} - ${req.end_date}</td>
                     <td>${req.reason}</td>
-                    <td>$calcDays(req.start_date, req.end_date)} days</td>
+                    <td>${totalDays} days</td>
                     <td>${req.status || "pending"}</td>
                 `;
                 vacationTableBody.appendChild(row);
