@@ -1,11 +1,10 @@
-
-
-
 document.addEventListener("DOMContentLoaded", () => {
     
     console.log("script loaded");
 
     const form = document.getElementById("loginForm");
+    const message = document.getElementById("message");
+
     if (!form){
         console.error("Login form not found!");
         return;
@@ -15,17 +14,14 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
         console.log("Login form submitted");
         
-    
-
         const email= document.getElementById("email").value;
         const password = document.getElementById("password").value;
-        const message = document.getElementById("message");
-
+        
         try{
           const response = await fetch("http://127.0.0.1:8000/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({email, password})
+                body: JSON.stringify({ email, password}),
           });
 
           const data = await response.json();
@@ -35,16 +31,25 @@ document.addEventListener("DOMContentLoaded", () => {
             message.textContent = "Successful connection"
             
             //........SAVE NAME AND EMAIL.......//
-            localStorage.setItem("userEmail", email);
+            localStorage.setItem("userEmail", data.user.email);
+            localStorage.setItem("userRole", data.user.role);
+            localStorage.setItem("userName", data.user.name);
 
-            const userName = email.split("@")[0];        // save the name of user from email
-            localStorage.setItem("userName", userName);
-
-            setTimeout(() => {
-              window.location.href = "dashboard.html";
-            },1500);
-
-          } else{
+            // ----Check role user---------
+           // const userName = email.split("@")[0];        // save the name of user from email
+           // localStorage.setItem("userName", userName);
+            if (data.user.role === "admin") {
+              console.log("Redirecting admin to admin.html");
+              setTimeout(() => {
+                window.location.href = "admin.html";
+            }, 1000);
+          } else {
+              console.log("Redirecting employee to dashboard.html");
+              setTimeout(() => {
+                window.location.href = "dashboard.html";
+              }, 1000);
+            }
+          } else {
             message.style.color = "red";
             message.textContent = "ERROR" + (data.error || "Incorrect email or password");
           }
@@ -52,5 +57,5 @@ document.addEventListener("DOMContentLoaded", () => {
           message.style.color = "red";
           message.textContent =  "Server Error: " + error.message;
         }
-    });  // close form.addEventListener
-});      // close document.addEventListener
+    });                                                             // close form.addEventListener
+});                                                                     // close document.addEventListener

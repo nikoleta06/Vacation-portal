@@ -207,52 +207,68 @@ class LeavePortalServer(BaseHTTPRequestHandler):
 
             # creating login for users connection
             elif self.path == "/login":                                     
-                print("POST /login detected")         # this line for debugging
+                print("POST /login detected")  
+               
+                try:  
+                    #----read JSON from request-----------
+                    content_length = int(self.headers.get("Content-Length", 0))
+                    post_data = self.rfile.read(content_length).decode("utf-8")
+                    login_data = json.loads(post_data)
+                    print("Received login data:", login_data)
 
-                 
-                content_length=int(self.headers["Content-Length"])
-                post_data=self.rfile.read(content_length)
-                login_data= json.loads(post_data)
-                print("Received login data:", login_data)
+                    print("Type of login_data:", type(login_data))
+                    print("Type of email:", type(login_data.get("email")))
+                    print("Type of password:", type(login_data.get("password")))
 
-                email = login_data.get("email")
-                password = login_data.get("password")
+                    #------we take email and password from body -----
+                    email = login_data.get("email")
+                    password = login_data.get("password")
+                    print(f"DEBUG: trying to log in as {email} with password {password}")
+                    
+                    if not email or not password:
+                        self.send_response(400)
+                        self.send_header("Content-type", "application/json")
+                        self.end_headers()
+                        self.wfile.write(json.dumps({"error": "Missing email or password"}).encode())         
+                        return 
+                    
+                    #--------conecting with database--------
+                    conn = sqlite3.connect(DB_NAME)
+                    conn.row_factory = sqlite3.Row
+                    cursor = conn.cursor()
 
-                conn = sqlite3.connect(DB_NAME)
-                cursor = conn.cursor()
+                    # ------Check if exists user-------
+                    cursor.execute("SELECT * FROM users WHERE email=? AND password=?", (email,password))
+                    user = cursor.fetchone()
+                    conn.close()
 
-                cursor.execute("SELECT * FROM users WHERE email=? AND password=?", (email,password))
-                user = cursor.fetchone()
-                conn.close()
+                    print ("DEBUG: user found ->", user)
 
-                if user: 
-                    print(f"Login successful for: {email}")
-                    self.send_response(200)
+                    if user: 
+                        user_data = dict(user)
+                        self.send_response(200)
+                        self.send_header("Access-Control-Allow-Origin", "*")
+                        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                        self.send_header("Content-Type", "application/json")
+                        self.end_headers()
+                        self.wfile.write(json.dumps({"message": "Login successful", "user": user_data}).encode())
+                    else:
+                        self.send_response(401)
+                        self.send_header("Access-Control-Allow-Origin", "*")
+                        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                        self.send_header("Content-Type", "application/json")
+                        self.end_headers()
+                        self.wfile.write(json.dumps({"error": "Invalid credentials"}).encode())
+
+                except Exception as e:
+                    print("SERVER ERROR:", e)
+                    self.send_response(500)
                     self.send_header("Access-Control-Allow-Origin", "*")
                     self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                     self.send_header("Content-Type", "application/json")
                     self.end_headers()
+                    self.wfile.write(json.dumps({"error": str(e)}).encode())
 
-                    # here we take the data from user 
-                    user_data = {
-                        "id": user[0],
-                        "name": user[1],
-                        "email": user[2],
-                        "role": user[3]
-                    }
-
-                    self.wfile.write(json.dumps({
-                        "message": "Login successful",
-                        "user": user_data
-                    }).encode())
-                else:
-                    print(f"Login failed for: {email}")
-                    self.send_response(401)
-                    self.send_header("Access-Control-Allow-Origin", "*")
-                    self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
-                    self.send_header("Content-Type", "application/json")
-                    self.end_headers()
-                    self.wfile.write(json.dumps({"error": "Invalid credentials"}).encode())
 
                  # Submitting a permit application
             elif self.path == "/vocation":             # CREATION SUBMISSION OF A LICENSE APPLICATION 
