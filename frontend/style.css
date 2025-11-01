@@ -278,3 +278,93 @@ button[type="submit"]:hover{
     background-color: #007bff;
     color: white;
 }
+
+/*-------------Admin Table Styling------------*/
+.dashboard-container {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    width: 80%;
+    max-width: 900px;
+    margin: 40px auto;
+    text-align: center;
+}
+
+.dashboard-container h1 {
+    color: #0b4973;
+    margin-bottom: 25px;
+    font-size: 26px;
+}
+
+/*----------Table----------*/
+#applicationTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 15px;
+}
+
+#applicationTable th,
+#applicationTble td {
+    border: 1px solid #ccc;
+    padding: 10px 12px;
+    text-align: center;
+}
+
+#applicationTable tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#applicationTable tr:hover {
+    background-color: #e8f1ff;
+}
+
+/*----------Buttons in Table---------*/
+button.approveBtn,
+button.rejectBtn {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin: 2px;
+}
+
+button.approveBtn {
+    background-color: #28a745;
+}
+
+button.approveBtn:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+}
+
+button.rejectBtn {
+    background-color: #dc3545;
+}
+
+button.rejectBtn:hover {
+    background-color: #c82333;
+    transform: scale(1.05);
+}
+
+/*-------------------status colors-----------------*/
+td:nth-child(7) {
+    font-weight: bold;
+}
+
+td:nth-child(7):contains("approved") {
+    color: green;
+}
+
+td:nth-child:contains("rejected") {
+    color:red;
+}
+
+td:nth-child(7):contains("pending") {
+    color: orange;
+}
+
