@@ -39,6 +39,7 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                 
                 self.send_response(200)
                 self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
                 self.wfile.write(json.dumps([dict(u) for u in users]).encode())
@@ -109,6 +110,7 @@ class LeavePortalServer(BaseHTTPRequestHandler):
 
                 self.send_response(200)
                 self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
                 self.wfile.write(json.dumps(results).encode())
@@ -124,15 +126,61 @@ class LeavePortalServer(BaseHTTPRequestHandler):
 
                 self.send_response(200)
                 self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
                 self.wfile.write(json.dumps([dict(r) for r in rows]).encode())
-                
+
+            elif self.path == "/admin/vocations":
+                print("GET /admin/vocations detected")
+
+                try: 
+                    conn = sqlite3.connect(DB_NAME)
+                    conn.row_factory = sqlite3.Row
+                    cursor = conn.cursor()
+
+                    query = """
+                        SELECT 
+                            v.id, 
+                            u.name, 
+                            u.email,
+                            v.start_date, 
+                            v.end_date,
+                            v.reason,
+                            v.status
+                        FROM vocation_requests AS v
+                        LEFT JOIN users AS u ON v.user_id = u.id
+                        ORDER BY v.id DESC;
+                    """
+                    cursor.execute(query)
+
+                    rows = cursor.fetchall()
+                    conn.close()
+
+                    results = [dict(row) for row in rows]
+                    print("Returned", len(results), "requests for admin")
+
+                    self.send_response(200)
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                    self.send_header("Content-Type", "application/json")
+                    self.end_headers()
+                    self.wfile.write(json.dumps(results).encode())
+
+                except Exception as e:
+                    print("SERVER ERROR (admin/vocations):", e)
+                    self.send_response(500)
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.send_header("Content-Type", "application/json")
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"error": str(e)}).encode())
+
             else:
                 print("Invalid GET path:", self.path)
                                 
                 self.send_response(404)
                 self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
                 self.wfile.write(json.dumps({"error": "Not found"}).encode())
@@ -141,6 +189,7 @@ class LeavePortalServer(BaseHTTPRequestHandler):
             print("SERVER ERROR:", e)
             self.send_response(500)
             self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             self.wfile.write(json.dumps({"error": str(e)}).encode())
