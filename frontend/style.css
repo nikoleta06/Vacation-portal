@@ -114,21 +114,7 @@ button[type="submit"]:hover{
 
 /* -----style for dashboard.html----------*/
 /*------header bar------*/
-.dashboard-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: #007bff;
-    color: white;
-    text-align: center;
-    padding: 15px 0;
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    z-index: 10;
-}
+
 
 /*-----------main dashboard box-------*/
 .dashboard-container{
@@ -165,15 +151,15 @@ button[type="submit"]:hover{
     color: white;
     border: none;
     border-radius: 10px;
-    padding: 12px 25px;
-    font-size: 16px;
+    padding: 8px 18px;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 #logoutBtn:hover{
     background-color: #005ea6;
-    transform: scale(1.05);
+    color: white;
 }
 
 /*-----------style for section---------*/
@@ -289,6 +275,7 @@ button[type="submit"]:hover{
     max-width: 900px;
     margin: 40px auto;
     text-align: center;
+    margin-top: 120px;
 }
 
 .dashboard-container h1 {
@@ -367,4 +354,69 @@ td:nth-child:contains("rejected") {
 td:nth-child(7):contains("pending") {
     color: orange;
 }
+
+/*--------Header Styling-----------*/
+.dashboard-header {
+    padding: 15px 40px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    border-radius: 0 0 20px 20px;
+    z-index: 1000;
+    width: 100%;
+    background-color:#007bff;
+    color: white;
+    display: flex;
+    justify-content: space-between;   /* title left, button right */
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+/*-----------Left Section Avatar + Title)---------*/
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-left: 20px;  /* space from left edge*/
+}
+/*----Avatar-----*/
+.admin-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.dashboard-header h2 {
+    margin-bottom: 3px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.dashboard-header p {
+    margin: 0;
+    font-size: 24px;
+    opacity: 0.9;
+}
+
+/*------------Logout Button--------------*/
+#logoutBtn {
+    background-color: white;
+    color: #007bff;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: 100px; /*space from right edge*/
+    align-self: center;
+}
+
+#logoutBtn:hover {
+    background-color: #e8f0ff;
+    color: white;
+}
+
+
 
