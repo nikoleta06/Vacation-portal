@@ -44,7 +44,7 @@ input[type="password"]{
 
 input[type="text"]:focus,
 input[type="email"]:focus,
-inout[type="password"]:focus{
+input[type="password"]:focus{
     border-color: #007bff;
     box-shadow: 0 0 6px rgba(0,123,255,0.4);
     outline: none;
@@ -123,8 +123,10 @@ button[type="submit"]:hover{
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     padding: 40px 60px;
     text-align: center;
-    width:420px;
+    width:80px;
+    max-width: 900px;
     margin-top: 100px;
+    margin-bottom: 40px;
     transition: transform 0.3 ease;
 }
 
@@ -134,7 +136,6 @@ button[type="submit"]:hover{
 
 .dashboard-container h1 {
     font-size: 30px;
-    font-weight: 700;
     color: #0b4973;
     margin-bottom: 15px;
 }
@@ -155,11 +156,14 @@ button[type="submit"]:hover{
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    margin-right: 60px;
+    margin-left: 90px;
+    text-align: center;
 }
 
 #logoutBtn:hover{
     background-color: #005ea6;
-    color: white;
+    color: rgb(163, 165, 241);
 }
 
 /*-----------style for section---------*/
@@ -187,13 +191,14 @@ button[type="submit"]:hover{
 #vacationTable {
     margin: 20px auto;
     border-collapse: collapse;
-    width: 90%;
+    width: 100%;
 }
 
 #vacationTable th,
 #vacationTable td{
     border: 1px solid #ddd;
     padding: 10px;
+    text-align: center;
 }
 
 #vacationTable th {
@@ -360,7 +365,7 @@ td:nth-child(7):contains("pending") {
     padding: 15px 40px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     border-radius: 0 0 20px 20px;
-    z-index: 1000;
+    z-index: 10;
     width: 100%;
     background-color:#007bff;
     color: white;
@@ -419,4 +424,136 @@ td:nth-child(7):contains("pending") {
 }
 
 
+/*---------Responsive Design for all pages----------------*/
+@media (max-width: 992px) {
+    .dashboard-container {
+        width: 90%;
+        padding: 25px;
+        margin-top: 120px;
+    }
+
+    .dashboard-header {
+        flex-direction: column;
+        gap: 10px;
+        padding: 20px;
+        text-align: center;
+    }
+
+    #logoutBtn {
+        margin: 10px 0;
+    }
+
+    .admin-avatar {
+        width: 40px;
+        height: 40px;
+    }
+
+    .dashboard-container h1 {
+        font-size: 22px;
+    }
+
+    #vacationTable,
+    #applicationTable {
+        font-size: 13px;
+    }
+
+    #vacationTable th, #vacationTable td,
+    #applicationTable th, #apllicationTable td {
+        padding: 6px;
+    }
+
+    #vacationForm {
+        width: 95%;
+        padding: 15px;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        align-items: flex-start;
+    }
+
+    .login-container {
+        width: 90%;
+        padding: 25px;
+        margin-top: 40px;
+    }
+
+    .dashboard-header {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 15px 10px 25px 10px;
+        border-radius: 0 0 25px 25px;
+    }
+
+    .header-left {
+        flex-direction: column;
+        align-items: center;
+        margin-left: 0;
+        gap: 5px;
+        
+    }
+
+    .admin-avatar {
+        width: 70px;
+        height: 70px;
+        border: 2px solid white;
+        margin-bottom: 5px;
+    }
+
+    .dashboard-header h2 {
+        font-size: 21px;
+        margin: 0;
+    }
+
+    .dashboard-header p {
+        font-size: 14px;
+        margin-top: 2px;
+        margin-bottom: 10px;
+    }
+    
+    #logoutBtn {
+        margin: 0;
+        padding: 10px 25px;
+        font-size:15px;
+        border-radius: 8px;
+        background-color: white;
+        color:#007bff
+    }
+
+    #logoutBtn:hover {
+        background-color: #e6eeff;
+    }
+
+
+    .dashboard-container {
+        margin-top: 200px;   /* extra space below header*/
+        width: 95%;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .dashboard-container h1 {
+        font-size: 22px;
+        margin-bottom: 18px;
+        color: #0b4973;
+    }
+
+    #vacationTable, #applicationTable {
+        font-size: 12px;
+    }
+
+    #applicationTable {
+        font-size: 13px;
+        overflow-x: auto;
+        display: block;
+    }
+
+    #applicationTable table {
+        width: 750px;
+    }
+   
+}
 
