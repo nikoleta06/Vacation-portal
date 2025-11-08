@@ -543,17 +543,27 @@ td:nth-child(7):contains("pending") {
 
     #vacationTable, #applicationTable {
         font-size: 12px;
-    }
+    } 
 
     #applicationTable {
         font-size: 13px;
         overflow-x: auto;
         display: block;
+        white-space: nowrap;
     }
 
     #applicationTable table {
         width: 750px;
-    }
+    } 
+
+    /*#applicationTable th,
+    #applicationTable td {
+        padding: 8px;
+    } */
+
+    /*#applicationTable tr:nth-child(even) {
+        background-color: #f9f9f9;
+    } */
    
 }
 

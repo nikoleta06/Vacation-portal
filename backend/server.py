@@ -16,12 +16,13 @@ class LeavePortalServer(BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers() 
 
-    def do_OPTIONS(self):                         # allow the browser to send the so-called preflight request, i add 2 more lines for connection with frontend
+    def do_OPTIONS(self):  
+        print("OPTIONS request detected!")                       # allow the browser to send the so-called preflight request, i add 2 more lines for connection with frontend
         self.send_response(200)
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")      # new line
-        self.send_header("Access-Control-Max-Age", "86400")                                  #new line
         self.end_headers()
 
     def do_GET(self):
@@ -39,81 +40,85 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                 
                 self.send_response(200)
                 self.send_header("Access-Control-Allow-Origin", "*")
-                self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                #self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
                 self.wfile.write(json.dumps([dict(u) for u in users]).encode())
                 print("Returned", len(users), "users")
 
-            elif self.path.startswith("/vocation"):
-                print("GET /vocation detected")
+            elif self.path.startswith("/vocations"):
+                print("GET /vocations detected")
 
-                # ---- Reading parameters from URL ----
+                try:
+                    query = urlparse(self.path).query
+                    params = parse_qs(query)
+                    user_email = params.get("email", [None])[0]
+                    user_id = params.get("user_id", [None])[0]
 
-                query = urlparse(self.path).query
-                params = parse_qs(query)
-                user_email = params.get("email", [None])[0]
-                user_id = params.get("user_id", [None])[0]
+                    conn = sqlite3.connect(DB_NAME)
+                    conn.row_factory = sqlite3.Row
+                    cursor = conn.cursor()
 
-                conn = sqlite3.connect(DB_NAME)
-                conn.row_factory = sqlite3.Row
-                cursor = conn.cursor()
-                   
-                         # email or id
-                if user_email:
-                    print(f"Fetching vocation requests for email: {user_email}")
-            
-                    cursor.execute("""
-                        SELECT v.id, v.start_date, v.end_date, v.reason, u.email 
-                        FROM vocation_requests v
-                        JOIN users u ON v.user_id = u.id 
-                        WHERE u.email = ?
-                        ORDER BY v.id DESC
-                    """, (user_email,))
+                         # ---- Filtering ----
+                    if user_email:
+                        print(f"Fetching vocation requests for email: {user_email}")
+                        cursor.execute("""
+                            SELECT v.id, v.start_date, v.end_date, v.reason, v.status, u.email
+                            FROM vocation_requests v
+                            JOIN users u ON v.user_id = u.id 
+                            WHERE u.email = ?
+                            ORDER BY v.id DESC
+                        """, (user_email,))
 
-                elif user_id:
-                    print(f"Fetching vocation requests fore user_id: {user_id}")
-                    cursor.execute("""
-                        SELECT v.id, v.start_date, v.end_date, v.reason, u.email 
-                        FROM vocation_requests v
-                        JOIN users u ON v.user_id = u.id 
-                        WHERE u.email = ?
-                        ORDER BY v.id DESC
-                    """, (user_id,))
+                    elif user_id:
+                        print(f"Fetching vocation requests for user_id: {user_id}")
+                        cursor.execute("""
+                            SELECT v.id, v.start_date, v.end_date, v.reason, v.status, u.email
+                            FROM vocation_requests v
+                            JOIN users u ON v.user_id = u.id 
+                            WHERE u.id = ?
+                            ORDER BY v.id DESC
+                        """, (user_id,))
 
+                    else:
+                        print("Fetching all vocation requests")
+                        cursor.execute("""
+                            SELECT v.id, v.start_date, v.end_date, v.reason, v.status, u.email
+                            FROM vocation_requests v
+                            JOIN users u ON v.user_id = u.id 
+                            ORDER BY v.id DESC
+                        """)
 
-                else:
-                    print("Fetching all vocation requests")
-                    cursor.execute("""
-                        SELECT v.id, v.start_date, v.end_date, v.reason, u.email 
-                        FROM vocation_requests v
-                        JOIN users u ON v.user_id = u.id 
-                        WHERE u.email = ?
-                        ORDER BY v.id DESC
-                    """)
+                    rows = cursor.fetchall()
+                    conn.close()
 
-                rows = cursor.fetchall()
-                conn.close()
+                    results = [
+                        {
+                            "id": row["id"],
+                            "start_date": row["start_date"],
+                            "end_date": row["end_date"],
+                            "reason": row["reason"],
+                            "status": row["status"],
+                            "email": row["email"]
+                        }
+                        for row in rows
+                    ]
 
-                            # ..........  conversion of results.........
-                results = [
-                    {
-                        "id": row["id"],
-                        "start_date": row["start_date"],
-                        "end_date": row["end_date"],
-                        "reason": row["reason"],
-                        "email": row["email"]
-                    }
-                    for row in rows
-                ]   
-                print("Returned", len(results), "vocation requests")
+                    print("Returned", len(results), "vocation requests")
 
-                self.send_response(200)
-                self.send_header("Access-Control-Allow-Origin", "*")
-                self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
-                self.send_header("Content-Type", "application/json")
-                self.end_headers()
-                self.wfile.write(json.dumps(results).encode())
+                    self.send_response(200)
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.send_header("Content-Type", "application/json")
+                    self.end_headers()
+                    self.wfile.write(json.dumps(results).encode())
+
+                except Exception as e:
+                    print("SERVER ERROR (GET /vocations):", e)
+                    self.send_response(500)
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.send_header("Content-Type", "application/json")
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"error": str(e)}).encode())
             
             elif self.path == "/vocation_all":
                 print("GET /vocation_all detected")
@@ -126,7 +131,7 @@ class LeavePortalServer(BaseHTTPRequestHandler):
 
                 self.send_response(200)
                 self.send_header("Access-Control-Allow-Origin", "*")
-                self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                #self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
                 self.wfile.write(json.dumps([dict(r) for r in rows]).encode())
@@ -162,7 +167,7 @@ class LeavePortalServer(BaseHTTPRequestHandler):
 
                     self.send_response(200)
                     self.send_header("Access-Control-Allow-Origin", "*")
-                    self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                    #self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                     self.send_header("Content-Type", "application/json")
                     self.end_headers()
                     self.wfile.write(json.dumps(results).encode())
@@ -180,7 +185,7 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                                 
                 self.send_response(404)
                 self.send_header("Access-Control-Allow-Origin", "*")
-                self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                #self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
                 self.wfile.write(json.dumps({"error": "Not found"}).encode())
@@ -189,7 +194,7 @@ class LeavePortalServer(BaseHTTPRequestHandler):
             print("SERVER ERROR:", e)
             self.send_response(500)
             self.send_header("Access-Control-Allow-Origin", "*")
-            self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+            #self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             self.wfile.write(json.dumps({"error": str(e)}).encode())
@@ -214,7 +219,7 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                 if not name or not email or not password:
                     self.send_response(400)
                     self.send_header("Access-Control-Allow-Origin", "*")
-                    self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                   # self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                     self.send_header("Content-Type","application/json")
                     self.end_headers()
                     self.wfile.write(json.dumps({"error": "Missing required fields"}).encode())
@@ -231,7 +236,7 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                     print(f"User already exists: {email}")
                     self.send_response(409)
                     self.send_header("Access-Control-Allow-Origin", "*")
-                    self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                    #self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                     self.send_header("Content-Type", "application/json")
                     self.end_headers()
                     self.wfile.write(json.dumps({"error": "User already exists"}).encode())
@@ -247,7 +252,7 @@ class LeavePortalServer(BaseHTTPRequestHandler):
 
                 self.send_response(201)
                 self.send_header("Access-Control-Allow-Origin", "*")
-                self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                #self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
                 self.wfile.write(json.dumps({"message": "User created successfully"}).encode())
@@ -297,14 +302,14 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                         user_data = dict(user)
                         self.send_response(200)
                         self.send_header("Access-Control-Allow-Origin", "*")
-                        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                       # self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                         self.send_header("Content-Type", "application/json")
                         self.end_headers()
                         self.wfile.write(json.dumps({"message": "Login successful", "user": user_data}).encode())
                     else:
                         self.send_response(401)
                         self.send_header("Access-Control-Allow-Origin", "*")
-                        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                       # self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                         self.send_header("Content-Type", "application/json")
                         self.end_headers()
                         self.wfile.write(json.dumps({"error": "Invalid credentials"}).encode())
@@ -313,7 +318,7 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                     print("SERVER ERROR:", e)
                     self.send_response(500)
                     self.send_header("Access-Control-Allow-Origin", "*")
-                    self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                    #self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                     self.send_header("Content-Type", "application/json")
                     self.end_headers()
                     self.wfile.write(json.dumps({"error": str(e)}).encode())
@@ -360,7 +365,7 @@ class LeavePortalServer(BaseHTTPRequestHandler):
 
                 self.send_response(201)
                 self.send_header("Access-Control-Allow-Origin", "*")
-                self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                #self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
                 self.wfile.write(json.dumps({"message": "Vacation request submitted successfully"}).encode())
@@ -371,7 +376,7 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                 print("Invalid POST path:", self.path)
                 self.send_response(404)
                 self.send_header("Access-Control-Allow-Origin", "*")
-                self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                #self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
                 self.wfile.write(json.dumps({"error": "Not found"}).encode())
@@ -381,32 +386,33 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                 print(f" SERVER ERROR: {e}")
                 self.send_response(500)
                 self.send_header("Access-Control-Allow-Origin", "*")
-                self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                #self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
                 self.wfile.write(json.dumps({"error": str(e)}).encode())
 
 
     def do_PUT(self):
-        print("PUT /vocation detected")
+        print("PUT request detected!")
 
         try:
-            if self.path =="/vocation":
-                
-                 # read data from request body 
-                content_length= int(self.headers["Content-Length"])
+            if self.path == "/vocation":
+                print("PUT /vocation detected")
+
+            # read data from request body
+                content_length = int(self.headers["Content-Length"])
                 put_data = self.rfile.read(content_length)
                 update_data = json.loads(put_data)
                 print("Received update data:", update_data)
 
-                 # get the fields from json 
+            #----Check endpoint-----
                 vocation_id = update_data.get("id")
                 new_status = update_data.get("status")
 
                 if not vocation_id or new_status not in ["approved", "rejected"]:
                     self.send_response(400)
                     self.send_header("Access-Control-Allow-Origin", "*")
-                    self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                    #self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                     self.send_header("Content-Type", "application/json")
                     self.end_headers()
                     self.wfile.write(json.dumps({"error": "Missing or invalid fields"}).encode())
@@ -419,29 +425,28 @@ class LeavePortalServer(BaseHTTPRequestHandler):
                 conn.commit()
                 conn.close()
 
-                print(f"Vocation {vocation_id} updated to {new_status}")
-
+                    #---Success response--------
                 self.send_response(200)
                 self.send_header("Access-Control-Allow-Origin", "*")
-                self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                #self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
-                self.wfile.write(json.dumps({"message": "Vocation status updated successfully"}).encode())
+                self.wfile.write(json.dumps({"message": "Status updated successfully"}).encode())
 
             else:
                 print("Invalid PUT path:", self.path)
                 self.send_response(404)
                 self.send_header("Access-Control-Allow-Origin", "*")
-                self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                #self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
                 self.wfile.write(json.dumps({"errors": "Not found"}).encode())
 
         except Exception as e:
-            print("SERVER ERROR:", e)
+            print("SERVER ERROR (PUT):", e)
             self.send_response(500)
             self.send_header("Access-Control-Allow-Origin", "*")
-            self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+            #self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             self.wfile.write(json.dumps({"error": str(e)}).encode())

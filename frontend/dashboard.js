@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function loadVacationRequests() {
         try {
             const userEmail = localStorage.getItem("userEmail");
-            const response = await fetch(`http://127.0.0.1:8000/vocation?email=${userEmail}`);
+            const response = await fetch(`http://127.0.0.1:8000/vocations?email=${userEmail}`);
             const data = await response.json();
 
             vacationTableBody.innerHTML = "";  //----Clear old rows-----
@@ -105,13 +105,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
             data.forEach(req => {
                 const totalDays = calcDays(req.start_date, req.end_date); // ---This is where the calculation takes place.
+
+                // We choice color based on status
+                let statusColor;
+                if (req.status === "approved") statusColor = "green";
+                else if (req.status === "rejected") statusColor = "red";
+                else statusColor = "orange";
+
                 const row = document.createElement("tr");
                 row.innerHTML = `
                     <td>${new Date().toLocaleDateString()}</td>
                     <td>${req.start_date} - ${req.end_date}</td>
                     <td>${req.reason}</td>
                     <td>${totalDays} days</td>
-                    <td>${req.status || "pending"}</td>
+                    <td style="color:${statusColor}; font-weight:bold;">${req.status || "pending"}</td>
                 `;
                 vacationTableBody.appendChild(row);
             });

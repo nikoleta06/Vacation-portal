@@ -56,6 +56,7 @@ document.addEventListener("DOMContentLoaded",  () => {
     //---Update vacation request status,PUT request------
     async function updateStatus(id,status) {
         try {
+            console.log("Sending update:", { id, status });
             const response = await fetch("http://127.0.0.1:8000/vocation", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
