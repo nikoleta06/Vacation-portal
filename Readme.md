@@ -15,9 +15,9 @@
 2. Logs in → data is fetched() to the server (/login)
 3. If valid, userEmail is stored in localStorage
 4. Browser navigates to dashboard.html
-5.dashboard.js retrieves the email from localStorage and displays the welcome message.
-6.Role management (Administrator table). There is an administrator role for approving/rejecting applications.
-7.Full connection of the control panel to the database. The application table has been dynamically updated from the backend. 
+5. Dashboard.js retrieves the email from localStorage and displays the welcome message.
+6. Role management (Administrator table). There is an administrator role for approving/rejecting applications.
+7. Full connection of the control panel to the database. The application table has been dynamically updated from the backend. 
 
 ### Unimplemented Functions
 1. Display all applications    Only the applications of the logged-in user are displayed.   
